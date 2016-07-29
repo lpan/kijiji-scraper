@@ -81,6 +81,7 @@ def print_listings(listings):
             print "[{:2}]".format(i), getattr(listing, j)
         print "-" * 80
 
+
 # This function exports listings as csv file:
 def export_listings(listings, keyword):
 
