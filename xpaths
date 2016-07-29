@@ -1,0 +1,5 @@
+Title xpath : //*[@id="MainContainer"]/div[3]/div[3]/span/h1
+Date xpath : //*[@id="itemdetails"]/div[2]/table/tbody/tr[1]/td
+For_sale xpath : //*[@id="itemdetails"]/div[2]/table/tbody/tr[7]/td
+Price xpath : //*[@id="itemdetails"]/div[2]/table/tbody/tr[2]/td/div/span/strong
+Description xpath : //*[@id="UserContent"]/table/tbody/tr/td/span
