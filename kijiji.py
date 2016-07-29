@@ -86,18 +86,9 @@ def export_listings(listings, keyword):
 
     filename = keyword + ".csv"
 
-    try:
-        file = open(filename, "a")
-        writer = csv.writer(file)
-
-    except IOError:
-        file = open(filename, "w")
-        writer = csv.writer(file)
-        writer.writerow(["#","Title", "Price", "Date", "Link"])
-
-    except:
-        print "[Error] File error."
-        quit()
+    file = open(filename, "w")
+    writer = csv.writer(file)
+    writer.writerow(["#","Title", "Price", "Date", "Link"])
 
     for i, listing in enumerate(listings):
         i += 1
