@@ -11,6 +11,7 @@ from crawly import *
 #################### CLASSES #####################
 
 
+# Main page listings
 class MainListing(object):
     def __init__(self, title, price, date, link):
         self.title = title
@@ -19,11 +20,13 @@ class MainListing(object):
         self.link = link
 
 
+# Currently unused
 class SubListing(MainListing):
-    def __init__(self, date, for_sale, description):
-        self.date = date
+    def __init__(self, exact_date, for_sale, description):
+        self.exact_date = exact_date
         self.for_sale = for_sale
         self.description = description
+
 
 ################### FUNCTIONS ####################
 
@@ -31,22 +34,21 @@ class SubListing(MainListing):
 # This function parses the search query into a valid Kijiji link
 def get_kijiji_query():
 
-    REGION = "b-grand-montreal/" #montreal
-    CODE = "k0l80002/" #montreal
+    REGION = "b-grand-montreal/" # Montreal
+    CODE = "k0l80002/" # Montreal
 
     while True:
-        # link = raw_input("Enter search query >>> ")
-        link = "macbook retina 13 256"
-        link = link.strip().replace(" ", "-") + "/"
+        # keyword = raw_input("Enter search query >>> ")
+        keyword = "macbook retina 13 8 256"
+        keyword = keyword.strip().replace(" ", "-") 
         try: 
-            response = get_url("http://www.kijiji.ca/"+ REGION + link + CODE)
+            response = get_url("http://www.kijiji.ca/"+ REGION + keyword + "/" + CODE)
             break
         except:
             print "[Error] Search error."
-            print "[Info] Try again."
             continue
 
-    return response
+    return response, keyword
 
 
 # This function obtains the properties of each listing and returns a list of MainListing instances
@@ -54,15 +56,23 @@ def get_main_listings(response):
 
     titles = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/text()')
     titles = [_.strip() for _ in titles]
+    print titles
+    print "-" * 80
 
     dates = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div/span[@class="date-posted"]/text()')
     dates = [_.strip() for _ in dates]
+    print dates
+    print "-" * 80
 
     prices = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="price"]/text()')
     prices = [_.strip().replace(u"\xa0", u"").replace(u"$",u"").replace(u",",".") for _ in prices]
+    print prices
+    print "-" * 80
 
     links = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/@href')
     links = [_.strip() for _ in links]
+    print links
+    print "-" * 80
 
     main_listings = [MainListing(titles[i], prices[i], dates[i], links[i]) for i, _ in enumerate(titles)]
 
@@ -74,29 +84,38 @@ def print_listings(listings):
 
     print "-" * 80
 
-    for i, main_listing in enumerate(main_listings):
+    for j in ["title", "price", "date", "link"]:
+        for i, listing in enumerate(listings):
+            i += 1
+            print "[{:2}]".format(i), getattr(listing, j)
+        print "-" * 80
+
+# This function exports listings as csv file:
+def export_listings(listings, keyword):
+
+    filename = keyword + ".csv"
+
+    file = open(filename, "w+")
+    writer = csv.writer(file)
+    writer.writerow(["#","Title", "Price", "Date", "Link"])
+
+    for i, main_listing in enumerate(listings):
         i += 1
         print "[{:2}]".format(i), main_listing.title
-    print "-" * 80
 
-    for i, main_listing in enumerate(main_listings):
+    for i, listing in enumerate(listings):
         i += 1
-        print "[{:2}]".format(i), main_listing.price
-    print "-" * 80
+        writer.writerow([i, listing.title, listing.price, listing.date, listing.link])
 
-    for i, main_listing in enumerate(main_listings):
-        i += 1
-        print "[{:2}]".format(i), main_listing.date
-    print "-" * 80         
+    print "[Info] Wrote to {}".format(filename)
 
-    for i, main_listing in enumerate(main_listings):
-        i += 1
-        print "[{:2}]".format(i), main_listing.link
-    print "-" * 80
 
 ##################### MAIN #######################
 
-response = get_kijiji_query()
+response, keyword = get_kijiji_query()
 main_listings = get_main_listings(response)
+
 print_listings(main_listings)
+export_listings(main_listings, keyword)
+
 

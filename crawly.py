@@ -14,7 +14,6 @@ def get_url(url):
         response = requests.get(url)
     except:
         print "[ERROR] Connection error."
-        print "[ERROR] Program quitting."
         quit()
 
     response = html.fromstring(response.text)
