@@ -32,16 +32,16 @@ class SubListing(MainListing):
 
 
 # This function parses the search query into a valid Kijiji link
-def get_kijiji_query():
+def get_kijiji_query(max_pages=1):
 
-    REGION = "b-grand-montreal/" # Montreal
-    CODE = "k0l80002/" # Montreal
+    REGION = "/b-grand-montreal" # Montreal
+    CODE = "/k0l80002" # Montreal
 
     while True:
         keyword = raw_input("Enter search query >>> ")
         keyword = keyword.strip().replace(" ", "-") 
         try: 
-            response = get_url("http://www.kijiji.ca/"+ REGION + keyword + "/" + CODE)
+            response = get_url("http://www.kijiji.ca"+ REGION + "/" + keyword + CODE)
             break
         except:
             print "[Error] Search error."
@@ -53,16 +53,16 @@ def get_kijiji_query():
 # This function obtains the properties of each listing and returns a list of MainListing instances
 def get_main_listings(response):
 
-    titles = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/text()')
+    titles = response.xpath('//div[@class="title"]/a/text()')
     titles = [_.strip() for _ in titles]
 
-    dates = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div/span[@class="date-posted"]/text()')
+    dates = response.xpath('//span[@class="date-posted"]/text()')
     dates = [_.strip() for _ in dates]
 
-    prices = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="price"]/text()')
+    prices = response.xpath('//div[@class="price"]/text()')
     prices = [_.strip().replace(u"\xa0", u"").replace(u"$",u"").replace(u",",".") for _ in prices]
 
-    links = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/@href')
+    links = response.xpath('//div[@class="title"]/a/@href')
     links = [_.strip() for _ in links]
 
     main_listings = [MainListing(titles[i], prices[i], dates[i], links[i]) for i, _ in enumerate(titles)]
