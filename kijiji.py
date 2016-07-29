@@ -20,7 +20,7 @@ class MainListing(object):
         self.link = link
 
 
-# Currently unused
+# Currently unused because it doesn't provide much extra info
 class SubListing(MainListing):
     def __init__(self, exact_date, for_sale, description):
         self.exact_date = exact_date
@@ -85,7 +85,7 @@ def print_listings(listings):
 def export_listings(listings, keyword):
 
     filename = keyword + ".csv"
-    
+
     try:
         file = open(filename, "a")
         writer = csv.writer(file)
