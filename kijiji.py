@@ -38,8 +38,7 @@ def get_kijiji_query():
     CODE = "k0l80002/" # Montreal
 
     while True:
-        # keyword = raw_input("Enter search query >>> ")
-        keyword = "macbook retina 13 8 256"
+        keyword = raw_input("Enter search query >>> ")
         keyword = keyword.strip().replace(" ", "-") 
         try: 
             response = get_url("http://www.kijiji.ca/"+ REGION + keyword + "/" + CODE)
@@ -56,23 +55,15 @@ def get_main_listings(response):
 
     titles = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/text()')
     titles = [_.strip() for _ in titles]
-    print titles
-    print "-" * 80
 
     dates = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div/span[@class="date-posted"]/text()')
     dates = [_.strip() for _ in dates]
-    print dates
-    print "-" * 80
 
     prices = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="price"]/text()')
     prices = [_.strip().replace(u"\xa0", u"").replace(u"$",u"").replace(u",",".") for _ in prices]
-    print prices
-    print "-" * 80
 
     links = response.xpath('//div[not(@class="search-item top-feature ")]/div/div/div[@class="title"]/a/@href')
     links = [_.strip() for _ in links]
-    print links
-    print "-" * 80
 
     main_listings = [MainListing(titles[i], prices[i], dates[i], links[i]) for i, _ in enumerate(titles)]
 
@@ -99,13 +90,11 @@ def export_listings(listings, keyword):
     writer = csv.writer(file)
     writer.writerow(["#","Title", "Price", "Date", "Link"])
 
-    for i, main_listing in enumerate(listings):
-        i += 1
-        print "[{:2}]".format(i), main_listing.title
-
     for i, listing in enumerate(listings):
         i += 1
-        writer.writerow([i, listing.title, listing.price, listing.date, listing.link])
+        row = [str(i), listing.title, listing.price, listing.date, listing.link]
+        row = [_.encode('utf-8') for _ in row]
+        writer.writerow(row)
 
     print "[Info] Wrote to {}".format(filename)
 
