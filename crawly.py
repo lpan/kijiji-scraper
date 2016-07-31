@@ -18,3 +18,4 @@ def get_url(url):
 
     response = html.fromstring(response.text)
     return response
+ 
